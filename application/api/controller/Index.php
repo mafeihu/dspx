@@ -10,6 +10,6 @@ use \think\Request;
 class Index extends Common
 {
     public function index(){
-        echo "a";exit;
+        echo "a2s";exit;
     }
 }
