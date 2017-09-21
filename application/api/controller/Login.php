@@ -21,47 +21,28 @@ class Login extends Common
      */
     public function wx_authorization(){
         $redirect_uri ='http%3a%2f%2fdspx.tstmobile.com%2fapi%2flogin%2fwx_callback';
-        $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".$this->appid."&redirect_uri=".$redirect_uri."&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect";
+        //https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxf45a25a21d57b0b5&redirect_uri=" + wxUrl + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+        $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=".$this->appid."&redirect_uri=".$redirect_uri."&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
         header("Location: ".$url);
     }
     //微信回调地址(获取用户的相关信息)
-    public function wx_callback (){
+    public function wx_callback ()
+    {
         //获取code
         $code = ($_GET["code"]);
         //通过code获取access_token
-        $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" . $this->appid ."&secret=" . $this->appsecret. "&code=" .$code  . "&grant_type=authorization_code";
-        $result = $this->curl_get($url);
+        $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" . $this->appid . "&secret=" . $this->appsecret . "&code=" . $code . "&grant_type=authorization_code";
+        $result = curl_get($url);
         $arr = json_decode($result, true);
         $url1 = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" . $this->appid . "&grant_type=refresh_token&refresh_token=" . $arr['refresh_token'];
-        $arr1 = $this->curl_get($url1);
+        $arr1 = curl_get($url1);
         $arr1 = json_decode($arr1, true);
-        $url2 = "https://api.weixin.qq.com/sns/userinfo?access_token=" . $arr1['access_token'] ."&openid=" . $this->appid ."&lang=zh_CN";
-        $arr2 = $this->curl_get($url2);
-        $arr2 = json_decode($arr2, true);
+        $url2 = "https://api.weixin.qq.com/sns/userinfo?access_token=" . $arr1['access_token'] . "&openid=" . $this->appid . "&lang=zh_CN";
+        $arr2 = curl_get($url2);
         $openid = $arr['openid'];
         if (!empty($openid)) {
-            $check = M('User')->field('user_id,token,openid,hx_username,hx_password')->where(['openid' => $openid])->find();
+            $check = DB::name("user")->where(["openid" => $openid])->find();
             if (!$check) {
-                $parse = explode('?', $code); //截取参数
-                $count = count($parse);
-                $parse = $parse[$count - 1];
-                parse_str($parse, $e); //参数转化为数组
-                $chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-                mt_srand(10000000 * (double)microtime());
-                for ($i = 0, $str = '', $lc = strlen($chars) - 1; $i < 12; $i++) {
-                    $str .= $chars[mt_rand(0, $lc)];
-                }
-                for ($i = 0, $str1 = '', $lc = strlen($chars) - 1; $i < 13; $i++) {
-                    $str1 .= $chars[mt_rand(0, $lc)];
-                }
-                $hx_password = '123456';
-                $result =  huanxin_zhuce($str, $hx_password);
-                if($result){
-                    $data['hx_password'] = $hx_password;
-                    $data['hx_username'] = $str;
-                    $data['alias'] = $str;
-                }
-                $data['score'] = 500;
                 $arr2 = json_decode($arr2, true);
                 $data['openid'] = $openid;
                 $data['token'] = uniqid();
@@ -71,29 +52,13 @@ class Login extends Common
                 $data['sex'] = $arr2['sex'];
                 $data['province'] = $arr2['province'];
                 $data['city'] = $arr2['city'];
-                $result = M('User')->add($data);
-                $check = M('User')->where(['user_id' => $result])->find();
-                $check = json_encode(array('uid' => $check['user_id'], 'token' => $check['token'], 'openid' => $check['openid'],
-                    'phone' => $check['phone'], 'hx_username' => $check['hx_username'], 'hx_password' => $check['hx_password']));
+                $result = DB::name("user")->insert($data);
+                $this->api_return("201","登录成功");
             } else {
-                $arr2 = json_decode($arr2, true);
-                $data['img'] = $arr2['headimgurl'];
-                $data['sex'] = $arr2['sex'];
-                $data['username'] = $arr2['nickname'];
-                $data['province'] = $arr2['province'];
-                $data['city'] = $arr2['city'];
-                M('User')->where(['user_id' => $check['user_id']])->save($data);
-                $check = json_encode(array('uid' => $check['user_id'], 'token' => $check['token'], 'openid' => $check['openid'],
-                    'phone' => $check['phone'], 'hx_username' => $check['hx_username'], 'hx_password' => $check['hx_password']));
+                $this->api_return("201","登录成功");
             }
-            cookie('user', $check);
+        }else{
+            $this->api_return("404","授权失败");
         }
-        if (!empty($code)) {
-            header('location:' . $code);
-        }
-
-    }
-    public function add_user(){
-        get_curl();
     }
 }
