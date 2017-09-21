@@ -94,6 +94,6 @@ class Login extends Common
 
     }
     public function add_user(){
-        $re = get_curl();
+        get_curl();
     }
 }
