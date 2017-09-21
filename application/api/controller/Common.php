@@ -13,6 +13,8 @@ class Common extends Controller
     protected $lawyer;
 
     public function _initialize(){
+        header('Content-Type: application/json');
+        header("Content-type:text/html;charset=utf-8");
         $this->assign('page_title','看法');
         $this->assign('page_keywords','法律大数据平台');
         if(Session::get('member')){
