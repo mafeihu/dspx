@@ -1,5 +1,6 @@
 <?php
 namespace app\api\controller;
+use lib\Live;
 use think\Controller;
 use think\View;
 use think\Db;
@@ -61,4 +62,9 @@ class Login extends Common
             $this->api_return("404","授权失败");
         }
     }
+    public function test(){
+        $live = new Live();
+        $live->test();
+    }
+
 }
