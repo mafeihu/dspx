@@ -29,3 +29,24 @@ function curl_get($url){
         curl_close($ch);
         return $res;
 }
+
+//成功处理函数
+function success($arr){
+    $d = [
+        'status' 	=> 'ok',
+        'data'		=> $arr
+    ];
+    $d = json_encode($d,JSON_UNESCAPED_UNICODE);
+    $d = str_replace('null','""',$d);
+    echo $d;
+    exit;
+}
+
+function error($arr){
+    $data = [
+        'status'    =>  'error',
+        'data'      =>  $arr,
+    ];
+    echo  json_encode($data,JSON_UNESCAPED_UNICODE);
+    exit();
+}
