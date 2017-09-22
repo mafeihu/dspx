@@ -196,7 +196,6 @@ class Easemob{
         );
         $res = $this->huanxin_curl_request($url, json_encode($param));
         $tokenResult = json_decode($res, true);
-        var_dump($tokenResult);exit;
         $tokenResult["password"] = $param["password"];
         $huanxin_uuid = $tokenResult["entities"][0]["uuid"];
         $huanxin_username = $tokenResult["entities"][0]["username"];

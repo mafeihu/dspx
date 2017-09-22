@@ -29,8 +29,30 @@ function curl_get($url){
         curl_close($ch);
         return $res;
 }
-
-//成功处理函数
+/**
+ * 产生随机的字符串
+ * @param int $length
+ * @param int $numeric
+ * @return string
+ */
+function random($length = 6, $numeric = 0)
+{
+    PHP_VERSION < '4.2.0' && mt_srand((double)microtime() * 1000000);
+    if ($numeric) {
+        $hash = sprintf('%0' . $length . 'd', mt_rand(0, pow(10, $length) - 1));
+    } else {
+        $hash = '';
+        $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjkmnpqrstuvwxyz';
+        $max = strlen($chars) - 1;
+        for ($i = 0; $i < $length; $i++) {
+            $hash .= $chars[mt_rand(0, $max)];
+        }
+    }
+    return $hash;
+}
+/*
+ * 成功处理函数
+ */
 function success($arr){
     $d = [
         'status' 	=> 'ok',
@@ -41,7 +63,9 @@ function success($arr){
     echo $d;
     exit;
 }
-
+/**
+ * @param $arr
+ */
 function error($arr){
     $data = [
         'status'    =>  'error',
@@ -49,4 +73,15 @@ function error($arr){
     ];
     echo  json_encode($data,JSON_UNESCAPED_UNICODE);
     exit();
+}
+/**
+* @随机生成8位数字
+*/
+function get_number(){
+    $a = range(0,9);
+    for($i=0;$i<8;$i++){
+        $b[] = array_rand($a);
+    }
+    $rs=join("",$b);
+    return $rs;
 }
