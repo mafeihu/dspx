@@ -15,7 +15,7 @@ return [
     // 服务器地址
     'hostname'       => '139.196.178.64',
     // 数据库名
-    'database'       => 'dspx',
+    'database'       => 'tp5admin',
     // 用户名
     'username'       => 'root',
     // 密码
