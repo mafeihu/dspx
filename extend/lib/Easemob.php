@@ -162,10 +162,14 @@ class Easemob{
         );
         //json_encode()函数，可将PHP数组或对象转成json字符串，使用json_decode()函数，可以将json字符串转换为PHP数组或对象
         $body=json_encode($options);
-        //$url=$base_url.'token';
-        $tokenResult = $this->postCurl($url,$body);
-        //var_dump($tokenResult['expires_in']);
-        //return $tokenResult;
+        $url = $this->url.'/token';
+        $i = true;
+        while($i) {
+            $tokenResult = $this->postCurl($url,$body);
+            if($tokenResult){
+                break;
+            }
+        }
         return "Authorization:Bearer ". $tokenResult["access_token"];
         //return "Authorization:Bearer YWMtG_u2OH1tEeWK7IWc3Nx2ygAAAVHjWllhTpavYYyhaI_WzIcHIQ9uitTvsmw";
     }
@@ -205,5 +209,18 @@ class Easemob{
         } else {
             return true;
         }
+    }
+    /*
+    * 创建聊天室
+    * @param $options
+    * @return mixed
+    */
+    function createChatRoom($options){
+        $url=$this->url."/chatrooms";
+        $header=array($this->getTokens());
+        $body=json_encode($options);
+        $result=$this->postCurl($url,$body,$header);
+        // 房间号'room_id'=>$result['data']['id'],
+        return $result;
     }
 }
