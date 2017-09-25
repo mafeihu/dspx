@@ -54,4 +54,33 @@ class Common extends Controller
         $pagehtml = $this->fetch('public:page');
         $this->assign('page', $pagehtml);
     }
+
+    /**
+     * @return array|false|mixed|\PDOStatement|string|\think\Model
+     */
+    function checklogin()
+    {
+        $param = Request::instance()->request();
+        if(empty($param['uid']) || empty($param['token'])){
+            error("token failed");
+        }
+        $data["member_id"] = $param["uid"];
+        $data["app_token"] = $param["token"];
+        $rel = DB::name("member")->where($data)->find();
+        if (!$rel) {
+            error("token failed");
+        } else {
+            if ($rel['is_del'] == 2) {
+                error("账号被删除");
+            } else {
+                //如果是会员,判断会员是否到期,到期变成普通会员
+                if ($rel['type'] == 2) {
+                    if ($rel['expiration_time'] < time()) {
+                        DB::name('member')->where(['member_id' => $param["uid"]])->update(['type' => 1, 'uptime' => time()]);
+                    }
+                }
+                return $rel;
+            }
+        }
+    }
 }

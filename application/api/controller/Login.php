@@ -36,7 +36,7 @@ class Login extends Common
                 error("今天短信发送数量已达上限");
             }
             $system = DB::name('system')->field('tengxun_appid,tengxun_appkey,code_volidity')->where(['id'=>1])->find();
-            $date = DB::name("user")->where(array('phone'=>$mobile))->find();
+            //$date = DB::name("member")->where(array('phone'=>$mobile))->find();
             $mobile_code = random(6, 1);
             $content = "【龙脉直播】您的验证码为".$mobile_code.",如非本人操作请忽略此消息。";
         }
@@ -50,8 +50,8 @@ class Login extends Common
      */
     public function message_login(){
         $param = Request::instance()->request();
-        $log = empty($param["log"]) ? '': $param["log"];
-        $lag = empty($param["lag"]) ? '': $param["lag"];
+        $log = empty($param["log"]) ? '116.42669': $param["log"];
+        $lag = empty($param["lag"]) ? '39.917149': $param["lag"];
         if(empty($param["mobile"]) || !(preg_match("/^1[34578]{1}\d{9}$/",$param["mobile"])) || empty($param["yzm"])){
             error("验证不正确");
         }
@@ -66,24 +66,30 @@ class Login extends Common
         if($valid_time>600 || $state==2){
             error("验证码已失效,请重新发送");
         }
-        $user = DB::name("member")->where(["member_phone"=>$mobile])->find();
+        $user = DB::name("member")->where(["phone"=>$mobile])->find();
+        /**
+         * 用户定位
+         */
+        if($log && $lag){
+            $gwd = $lag.','.$log;
+            $baidu_apikey =DB::name('system')->where("")->value('baidu_apikey');
+            $file_contents = file_get_contents('http://api.map.baidu.com/geocoder/v2/?ak='.$baidu_apikey.'&location='.$gwd.'&output=json');
+            $rs = json_decode($file_contents,true);
+            $sheng = $rs['result']['addressComponent']['province'];
+            $shi = $rs['result']['addressComponent']['city'];
+            $qu = $rs['result']['addressComponent']['district'];
+            $address = $rs['result']['formatted_address'];
+        }
         if($user){
             //用户存在的时候
             if($user['is_del']==2){
                 error('账号被限制,请联系平台!');
             }else{
                 $member_token = uniqid();
-                $user["token"] = $member_token;
-                $user["img"] = $user["member_head_image"];
-                DB::name("member")->where(["member_id"=>$user["member_id"]])->update(["member_token"=>$member_token]);
+                $user["app_token"] = $member_token;
+                $user["img"] = $user["header_img"];
+                DB::name("member")->where(["member_id"=>$user["member_id"]])->update(["app_token"=>$member_token,'log'=>$log,'lag'=>$lag]);
                 DB::name("mobile_sms")->where(["mobile_sms_id"=>$result['mobile_sms_id']])->update(["state"=>2]);
-                if($log && $lag){
-                    $gwd = $lag.','.$log;
-                    $baidu_apikey =DB::name('system')->where("")->value('baidu_apikey');
-                    $file_contents = file_get_contents('http://api.map.baidu.com/geocoder/v2/?ak='.$baidu_apikey.'&location='.$gwd.'&output=json');
-                    $rs = json_decode($file_contents,true);
-                    DB::name("Login_hostroy")->add(['user_id'=>$user['member_id'],'log'=>$log,'lag'=>$lag,'area'=>$rs['result']['addressComponent']['city'],'address'=>$rs['result']['formatted_address'],'intime'=>time(),'date'=>date('Y-m-d',time())]);
-                }
                 success($user);
             }
         }else{
@@ -96,20 +102,25 @@ class Login extends Common
             }
             $photo = "/Public/admin/touxiang.png";
             $hx_password="123456";
-            $date = [
-                'member_token'=>uniqid(),
-                'member_phone'=>$mobile,
-                'member_head_image'=>$photo,
-                'member_nick_name'=>"游荡者",
+            $data = [
+                'app_token'=>uniqid(),
+                'phone'=>$mobile,
+                'uuid'=>get_guid(),
+                'header_img'=>$photo,
+                'username'=>"游荡者",
                 'ID'=>get_number(),
-                'create_time'=>time(),
-                'member_alias'=>$str,
-                'personalized_signature'=>"这个人很懒什么都没有留下！！",
+                'intime'=>time(),
+                'alias'=>$str,
+                'sex'=>1,
+                'signature'=>"这个人很懒什么都没有留下！！",
                 'hx_username'=>$str,
-                'member_sex'=>1,
                 'hx_password'=>$hx_password,
+                'province'=>$sheng,
+                'city'=>$shi,
+                'area'=>$qu,
+                'address'=>$address,
             ];
-            if ($member_id=DB::name('member')->insert($date)){
+            if ($member_id=DB::name('member')->insert($data)){
                 //验证成功进行状态修改
                 DB::name("mobile_sms")->where(["mobile_sms_id"=>$result['mobile_sms_id']])->update(["state"=>2]);
                 $hx = new Easemob();
@@ -118,7 +129,7 @@ class Login extends Common
                     error("授权注册失败");
                 }
                 $user = DB::name('member')->where(['member_id'=>$member_id])->find();
-                $user['img'] = C('IMG_PREFIX').$user['img'];
+                $user['img'] = $user["header_img"];
                 success($user);
             }else {
                 error('失败!');
