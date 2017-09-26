@@ -1,6 +1,7 @@
 <?php
 namespace app\api\controller;
 use lib\Easemob;
+use lib\Upload;
 use think\Controller;
 use think\View;
 use think\Db;
@@ -66,7 +67,6 @@ class Login extends Common
         if($valid_time>600 || $state==2){
             error("验证码已失效,请重新发送");
         }
-        $user = DB::name("member")->where(["phone"=>$mobile])->find();
         /**
          * 用户定位
          */
@@ -80,6 +80,7 @@ class Login extends Common
             $qu = $rs['result']['addressComponent']['district'];
             $address = $rs['result']['formatted_address'];
         }
+        $user = DB::name("member")->where(["phone"=>$mobile])->find();
         if($user){
             //用户存在的时候
             if($user['is_del']==2){
@@ -87,7 +88,7 @@ class Login extends Common
             }else{
                 $member_token = uniqid();
                 $user["app_token"] = $member_token;
-                $user["img"] = $user["header_img"];
+                $user["header_img"] = $user["header_img"];
                 DB::name("member")->where(["member_id"=>$user["member_id"]])->update(["app_token"=>$member_token,'log'=>$log,'lag'=>$lag]);
                 DB::name("mobile_sms")->where(["mobile_sms_id"=>$result['mobile_sms_id']])->update(["state"=>2]);
                 success($user);
@@ -120,7 +121,7 @@ class Login extends Common
                 'area'=>$qu,
                 'address'=>$address,
             ];
-            if ($member_id=DB::name('member')->insert($data)){
+            if ($member_id=DB::name('member')->insertGetId($data)){
                 //验证成功进行状态修改
                 DB::name("mobile_sms")->where(["mobile_sms_id"=>$result['mobile_sms_id']])->update(["state"=>2]);
                 $hx = new Easemob();
@@ -135,6 +136,13 @@ class Login extends Common
                 error('失败!');
             }
         }
+    }
+    /**
+     *图片上传
+     */
+    public function upload(){
+        $up = new Upload();
+        $up->upload();
     }
 
 }
