@@ -373,8 +373,6 @@ class Live extends Common{
             error('失败!');
         }
     }
-
-
     /**
      *退出直播间
      */

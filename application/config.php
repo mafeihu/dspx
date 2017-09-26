@@ -195,7 +195,7 @@ return [
         // cookie 保存路径
         'path'      => '/',
         // cookie 有效域名
-        'domain'    => '',
+        'domain'    => 'http://dspx.tstmobile.com',
         //  cookie 启用安全传输
         'secure'    => false,
         // httponly设置
@@ -212,4 +212,5 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
+    'domain'=> 'http://dspx.tstmobile.com',
 ];
