@@ -70,7 +70,6 @@ class Login extends Controller
             if(!empty($user)){
                 $this->redirect('Index/index');
             }
-            pre(my_encrypt('123456'));
             $this->assign("system", $system);
             return $this->fetch('common/login-1');
         }

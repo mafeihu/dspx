@@ -1,7 +1,50 @@
 <?php
-namespace  app\admin\controller;
-class Index extends Base {
+/**
+ * Created by PhpStorm.
+ * User: ljy
+ * Date: 17/9/26
+ * Time: 下午2:14
+ */
+
+namespace app\admin\controller;
+
+
+class Index extends Base
+{
     public function index(){
+//        $str = '2016年07月26日 15时35分';
+//        preg_match_all('/\d/',$str,$arr);
+//        $timer=implode('',$arr[0]);
+//        echo $timer;die;
+//        $time = strtotime('201607261535');
+//        echo $time;die;
+//        $aa = array();
+//
+//        $list = M("Order")->table("qj_order as a")->join("qj_distance as b ON a.order_id=b.`order_id`")->where("((".time()."-a.`date`< 30 AND b.distance <6) OR  (".time()."-a.`date` < 60 AND b.distance <11)) OR (".time()."-a.`date`<90 and b.distance<16) or (".time()."-a.`date`<120 and b.distance<20) or (".time()."-a.`date`>120 and b.distance>20)  AND b.`user_id`=3")->field("a.*,b.*")->select();
+//        //echo M("Order")->getLastSql();die;
+//        dump($list);die;
+//        foreach($list as $k=>$v){
+//            $dis = M('Distance')->where(array('user_id'=>3,'order_id'=>$v['order_id']))->getField('distance');
+//            $time = time()-$v['date'];
+//            if($dis<6 && $time<31){
+//                    $aa[] = $list[$k];
+//            }else if($dis>5 && $dis<11 && $time<61){
+//                    $aa[] = $list[$k];
+//            }else if($dis>10 && $dis<16 && $time<91){
+//                    $aa[] = $list[$k];
+//            }else if($dis>15 && $dis<21 && $time<121){
+//                    $aa[] = $list[$k];
+//            }else if($dis>20 && $time>120){
+//                    $aa[] = $list[$k];
+//            }
+//
+//        }
+//        dump($aa);die;
+//        $shopping = array('2' => array('shop_id'=>2,'nums'=>3),'3' => array('shop_id'=>2,'nums'=>3),'4' => array('shop_id'=>2,'nums'=>3));
+//        $aa = serialize($shopping);
+//        $bb = unserialize($aa);
+//        echo $aa;
+//        dump($bb);die;
         //服务器信息
         if (function_exists('gd_info')) {
             $gd = gd_info();
@@ -31,10 +74,4 @@ class Index extends Base {
         $this->assign(['server_info'=>$info]);
         return $this->fetch();
     }
-
-    public function __empty(){
-        $this->view->engine->layout(false);
-        return $this->fetch('common/error');
-    }
-
 }
