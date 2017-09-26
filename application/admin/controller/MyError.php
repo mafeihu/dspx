@@ -9,9 +9,16 @@
 namespace app\admin\controller;
 
 
-class MyError
+use think\Controller;
+use think\Request;
+
+class MyError extends Controller
 {
+
     public function _empty(){
-        $this->redirect('login/error');
+        //根据当前控制器名来判断要执行那个城市的操作
+        $this->view->engine->layout(false);
+        return $this->fetch('common/error');
+
     }
 }

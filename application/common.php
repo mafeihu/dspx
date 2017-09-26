@@ -101,3 +101,37 @@ function get_guid(){
         .substr($charid,20,12) ;
     return strtolower($uuid);
 }
+
+//验证码验证
+function check_verify($code, $id = ''){
+    $captcha = new \think\captcha\Captcha();
+    return $captcha->check($code, $id);
+}
+
+//获取ip地址
+function get_ip()
+{
+    global $ip;
+    if(getenv("HTTP_CLIENT_IP")){
+        $ip = getenv("HTTP_CLIENT_IP");
+    }else if(getenv("HTTP_X_FORWARDED_FOR")){
+        $ip = getenv("HTTP_X_FORWARDED_FOR");
+    }elseif(getenv("REMOTE_ADDR")){
+        $ip = getenv("REMOTE_ADDR");
+    }else{
+        $ip = "Unknow";
+    }
+    return $ip;
+}
+
+//加密
+function my_encrypt($data) {
+    return md5(config('AUTH_CODE') . md5($data));
+}
+
+//打印变量
+function pre($content) {
+    echo "<pre>";
+    print_r($content);
+    echo "</pre>";
+}
