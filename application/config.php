@@ -195,7 +195,7 @@ return [
         // cookie 保存路径
         'path'      => '/',
         // cookie 有效域名
-        'domain'    => 'http://dspx.tstmobile.com',
+        'domain'    => '',
         //  cookie 启用安全传输
         'secure'    => false,
         // httponly设置
@@ -213,10 +213,14 @@ return [
         'list_rows' => 15,
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     'domain'=> 'http://dspx.tstmobile.com',
 =======
 
     //设置项目域名
     'domain'=> 'http://dspx.tstmobile.com'
 >>>>>>> 后台更新
+=======
+    'domain'=> 'http://dspx.tstmobile.com'
+>>>>>>> 定时任务
 ];

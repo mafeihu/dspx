@@ -16,6 +16,7 @@ class  QiniuPili{
     private $hubName = "";
     private $publishurl = "";
     private $playurl='';
+    private $domian='';
 
     /**
      * 初始化参数
@@ -131,6 +132,22 @@ class  QiniuPili{
         //保存直播数据
         $fname = $stream->save(0,0);
         return $fname;
+    }
+    /**
+     *获取七牛的活跃流
+     */
+    public function listLiveStreams(){
+        $ak = $this->ak;
+        $sk = $this->sk;
+        $hubName = $this->hubName;
+        //创建hub
+        $mac = new \Qiniu\Pili\Mac($ak, $sk);
+        $client = new \Qiniu\Pili\Client($mac);
+        $hub = $client->hub($hubName);
+        $stream_arr = $hub->listLiveStreams("php-sdk-test", 100000, "");
+        $stream_list = $stream_arr["keys"];
+        return $stream_list;
+
     }
 }
 

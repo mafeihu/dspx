@@ -54,13 +54,14 @@ class Hub
         }
         $ret = array();
         $ret["keys"] = $keys;
-        $ret["omarker"] = $ret["marker"];
+        //$ret["omarker"] = $ret["marker"];
         return $ret;
     }
 
     public function listLiveStreams($prefix, $limit, $marker)
     {
         return $this->_list("true", $prefix, $limit, $marker);
+
     }
 
     public function listStreams($prefix, $limit, $marker)

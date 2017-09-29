@@ -15,6 +15,17 @@ class Common extends Controller
     public function _initialize(){
         header('Content-Type: application/json');
         header("Content-type:text/html;charset=utf-8");
+        $this->assign('page_title','看法');
+        $this->assign('page_keywords','法律大数据平台');
+        if(Session::get('member')){
+            $this->member = Session::get('member');
+        }
+        if(Session::get('lawyer')){
+            $this->lawyer = Session::get('lawyer');
+        }
+        define('CONTROLLER_NAME',Request::instance()->controller());
+        define('MODULE_NAME',Request::instance()->module());
+        define('ACTION_NAME',Request::instance()->action());
     }
     public function get_guid(){
         mt_srand((double)microtime()*10000);
@@ -51,13 +62,13 @@ class Common extends Controller
     {
         $param = Request::instance()->request();
         if(empty($param['uid']) || empty($param['token'])){
-            error("token failed");
+            pending('p',"token failed");
         }
         $data["member_id"] = $param["uid"];
         $data["app_token"] = $param["token"];
         $rel = DB::name("member")->where($data)->find();
         if (!$rel) {
-            error("token failed");
+            pending("token failed");
         } else {
             if ($rel['is_del'] == 2) {
                 error("账号被删除");

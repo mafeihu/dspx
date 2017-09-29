@@ -74,6 +74,13 @@ function error($arr){
     echo  json_encode($data,JSON_UNESCAPED_UNICODE);
     exit();
 }
+function pending($arr){
+    echo  json_encode([
+        'status'=> 'pending',
+        'info'=> $arr
+    ]);
+    exit();
+}
 /**
 * @随机生成8位数字
 */

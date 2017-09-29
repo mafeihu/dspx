@@ -200,6 +200,9 @@ class Easemob{
         );
         $res = $this->huanxin_curl_request($url, json_encode($param));
         $tokenResult = json_decode($res, true);
+        if($tokenResult["error"]=='duplicate_unique_property_exists'){
+            return false;
+        }
         $tokenResult["password"] = $param["password"];
         $huanxin_uuid = $tokenResult["entities"][0]["uuid"];
         $huanxin_username = $tokenResult["entities"][0]["username"];
@@ -221,6 +224,38 @@ class Easemob{
         $body=json_encode($options);
         $result=$this->postCurl($url,$body,$header);
         // 房间号'room_id'=>$result['data']['id'],
+        return $result;
+    }
+    /*
+    * 添加聊天室成员
+    */
+    function adduserChatRoom($usernames,$chatroomid){
+        $url=$this->url."/chatrooms/$chatroomid/users";
+        $header=array($this->getTokens());
+        $body=json_encode(['usernames'=>[$usernames]]);
+        $result=$this->postCurl($url,$body,$header);
+        return $result;
+    }
+    /**
+     *发送文本消息
+     */
+    function sendText($sender, $receiver, $msg,$ext)
+    {
+        $url = $this->url."/messages";
+        $header=array($this->getTokens());
+        $body = array(
+            'target_type' => 'chatrooms',
+            'target' => array(
+                '0' => $receiver
+            ),
+            'msg' => array(
+                'type' => "txt",
+                'msg' => $msg
+            ),
+            'from' => $sender,
+            'ext' => $ext
+        );
+        $result=$this->postCurl($url,json_encode($body),$header,'POST');
         return $result;
     }
 }
