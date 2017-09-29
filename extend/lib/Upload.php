@@ -28,7 +28,11 @@ class Upload extends Validate{
                         ['size'=>2000000,'ext'=>'png,jpg,jpeg，gif','mine'=>"image"]
                         )->move(ROOT_PATH . 'public' . DS . 'uploads');
             if($info){
+<<<<<<< HEAD
                 // 成功上传后 获取上传信息
+=======
+                // 成功上传后 获取上传信
+>>>>>>> 后台更新
                 array_push($images,config('domain').'/uploads/'.$info->getSaveName());
             }else{
                 error( $file->getError());

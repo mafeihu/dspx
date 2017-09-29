@@ -364,7 +364,11 @@ function commonAjaxSubmit(url,formObj){
                     top.window.location.reload();
                 },1000);
             }
-            if(data.data == '验证码错误啦，请再输入吧'){
+            if(data.data == '令牌数据无效'){
+                setTimeout(function(){
+                    window.location.href = window.location.href;
+                },1000);
+            }else if(data.data == '验证码错误啦，请再输入吧'){
                 setTimeout(function(){
                     $('#verify_code').val('');
                     $('#verify_code').focus();

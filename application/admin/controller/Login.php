@@ -19,7 +19,7 @@ use think\Validate;
 
 class Login extends Controller
 {
-    public function signin(){
+    public function sign_in(){
         $system = Db::name("system")->where(['id'=>"1"])->value('title');
         if (Request::instance()->isAjax()){
             $rule = [
@@ -39,7 +39,6 @@ class Login extends Controller
             $validate = new Validate($rule,$message);
             $result = $validate->check($data);
             if(!$result)            error($validate->getError());
-
             if(!check_verify($data['verify_code']))     error("验证码错误啦，请再输入吧");
 
             $data['password']	= my_encrypt($data['password']);
@@ -96,6 +95,9 @@ class Login extends Controller
         return $captcha->entry();
     }
 
-    //404错误页面
+    public function sign_out(){
+        session('user', null);
+        return $this->redirect('login/sign_in');
+    }
 
 }

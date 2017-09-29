@@ -12,9 +12,10 @@ require_once 'JSON.php';
 $php_path = dirname(__FILE__) . '/';
 $php_url = dirname($_SERVER['PHP_SELF']) . '/';
 
-
-$root_path = $php_path . '../../../../Uploads/';
-$root_url = $php_url . '../../../../Uploads/';
+file_put_contents('2.txt',json_encode($php_url));
+file_put_contents('3.txt',json_encode($php_path));
+$root_path =  $php_path.'./../../../uploads/';
+$root_url =  $php_url.'./../../../uploads/';
 
 //根目录路径，可以指定绝对路径，比如 /var/www/attached/
 //$root_path = $php_path . '../attached/';
@@ -49,6 +50,7 @@ if (empty($_GET['path'])) {
 	$current_dir_path = $_GET['path'];
 	$moveup_dir_path = preg_replace('/(.*?)[^\/]+\/$/', '$1', $current_dir_path);
 }
+file_put_contents('4.txt',json_encode($_GET['path']));
 echo realpath($root_path);
 //排序形式，name or size or type
 $order = empty($_GET['order']) ? 'name' : strtolower($_GET['order']);
@@ -138,4 +140,5 @@ $result['file_list'] = $file_list;
 //输出JSON字符串
 header('Content-type: application/json; charset=UTF-8');
 $json = new Services_JSON();
+file_put_contents('1.txt',json_encode($result));
 echo $json->encode($result);

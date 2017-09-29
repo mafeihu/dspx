@@ -15,6 +15,7 @@ use think\Controller;
 use think\Request;
 use think\Session;
 use think\Db;
+use think\Paginator;
 
 
 class Base extends Controller
@@ -27,81 +28,32 @@ class Base extends Controller
         $this->assign('nums',$nums);
         $this->user = Session::get('user');
         if (empty($this->user)){
-            $this->redirect('login/signin');
+            $this->redirect('login/sign_in');
         }
         $request = Request::instance();
 
         //权限控制
-        if($this->user['id'] != 1){
-            $rules_name = session('rules_'.$this->user['id']);
-            if(!$rules_name){
-                $rule_str = Db::name('AuthGroupAccess')->alias('aga')
-                    ->join(' __AUTH_GROUP__ ag', 'aga.group_id=ag.id')
-                    ->where(['aga.uid'=>$this->user['id']])
-                    ->getField('rules');
-                $rules_name = Db::name('AuthRule')->where(['id'=>array('IN', $rule_str)])->column('id,name');
-                Session::set('rules_'.$this->user['id'], $rules_name);
-            }
-        }
-        $m_name = Db::name('AuthRule')->where(['name'=>$request->controller().'/index', 'pid'=>0])->value('title');
+//        if($this->user['id'] != 1){
+//            $rules_name = session('rules_'.$this->user['id']);
+//            if(!$rules_name){
+//                $rule_str = Db::name('AuthGroupAccess')->alias('aga')
+//                    ->join(' __AUTH_GROUP__ ag', 'aga.group_id=ag.id')
+//                    ->where(['aga.uid'=>$this->user['id']])
+//                    ->getField('rules');
+//                $rules_name = Db::name('AuthRule')->where(['id'=>array('IN', $rule_str)])->column('id,name');
+//                Session::set('rules_'.$this->user['id'], $rules_name);
+//            }
+//        }
+//        $m_name = Db::name('AuthRule')->where(['name'=>$request->controller().'/index', 'pid'=>0])->value('title');
         $system = Db::name("system")->where(['id'=>1])->find();
         $url = Session::get('url');
-        $this->assign(['system'=>$system,'m_name'=>$m_name,'user'=>$this->user,'url'=>$url]);
+        $this->assign(['system'=>$system,'user'=>$this->user,'url'=>$url]);
     }
 
-    // 左侧菜单
-    public function menu(){
-    $user	= Session::get('user');
-    $nav = Db::name("AuthRule")->where(array('pid'=>0,'status'=>1))->order('id asc')->select();
-    $auth = new Auth();
-    $mode = 'url';
-    //'or' 表示满足任一条规则即通过验证;
-    //'and'则表示需满足所有规则才能通过验证
-    $relation = 'or';
-    if($user['username'] != 'admin') {
-        foreach ($nav as $key => $val) {
-            $arr = explode("/", $val['name']);
-            $type = $arr[0];
-            $res = $auth->check($val['name'], $user['id'], $type, $mode, $relation);
-            if (!$res) {
-                unset($nav[$key]);
-            }else{
-                $map["pid"] = $val['id'];
-                $map["is_button"]='1';
-                $map["status"]=1;
-                $menu = M("auth_rule")->where($map)->order("id asc")->select();
-                if ($user['username'] != 'admin') {
-                    foreach($menu as $k=>$v){
-                        $arr = explode("/", $v['name']);
-                        $type = $arr[0];
-                        $res = $auth->check($v['name'], $user['id'], $type, $mode, $relation);
-                        if (!$res) {
-                            unset($menu[$k]);
-                        }
-                    }
-                }
-                $nav[$key]['menu'] = array_values($menu);
-            }
-
-        }
-    }else{
-        foreach ($nav as $key => $val) {
-            $map["pid"] = $val['id'];
-            $map["is_button"]='1';
-            $map["status"]=1;
-            $menu = Db::name("auth_rule")->where($map)->order("id asc")->select();
-            $nav[$key]['menu'] = $menu;
-        }
-    }
-    $nav = array_values($nav);
-    $this->assign('nav',$nav);
-    $this->view->engine->layout(false);
-    return $this->fetch("common/_menu");
-}
 
     protected function getpage($count, $pagesize) {
         //$p = new Think\Page($count, $pagesize);
-        $p=new \Think\Page($count,$pagesize);
+        $p = new Paginator\Collection();
         $p->setConfig('header', '<li><a class="num">共%TOTAL_ROW%条记录</a></li>');
         $p->setConfig('prev', '上一页');
         $p->setConfig('next', '下一页');
@@ -112,12 +64,7 @@ class Base extends Controller
         return $p;
     }
 
-    /**
-     *定义空方法
-     */
-    public function _empty(){
-        $this->redirect('Public/error');
-    }
+
 
     protected function gaussian_blur($srcImg,$savepath=null,$savename=null,$blurFactor=3){
         $gdImageResource=$this->image_create_from_ext($srcImg);
@@ -210,6 +157,7 @@ class Base extends Controller
         }
         return $im;
     }
+
 
 
 }

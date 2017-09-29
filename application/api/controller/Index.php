@@ -9,7 +9,15 @@ use \think\Request;
 
 class Index extends Common
 {
-    public function index(){
-        return $this->fetch("<h2>nihao</h2>");
-    }
+    /**
+     * bannber
+     */
+   public function banner_list(){
+       $data["is_del"] =1;
+       $list = DB::name('Banner')->field("b_img,b_id,url,b_type,title")->where($data)->order('sort desc')->select();
+       if (!$list){
+           $list =[];
+       }
+       success($list);
+   }
 }

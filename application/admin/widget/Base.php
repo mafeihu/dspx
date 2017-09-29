@@ -86,8 +86,6 @@ class Base extends Controller
         } else {
             $this->assign('action', $action);
         }
-        pre($request->controller());
-        die;
         if(isset($fields[$request->controller()][$request->action()]['fields'])){
             $this->assign('url',$fields[$request->controller()][$request->action()]['url']);
             $this->assign('table',$fields[$request->controller()][$request->action()]['table']);
@@ -102,22 +100,13 @@ class Base extends Controller
         return $this->fetch("common/breadcrumbs");
     }
 
-    // 浮动层
-    public function float(){
-        layout(false);
-        $this->display("Public/float");
+    // 百度编辑器
+    public function ueditor($id,$content=''){
+        $this->assign('id',$id);
+        $this->assign('content',htmlspecialchars_decode($content));
+        $this->view->engine->layout(false);
+        return $this->fetch('widget/ueditor');
     }
 
-    // 提示层
-    public function notice(){
-        layout(false);
-        $this->display("Public/notice");
-    }
-
-    // 页脚
-    public function foot(){
-        layout(false);
-        $this->display("Public/_footer");
-    }
 
 }

@@ -11,7 +11,7 @@
 
 namespace think\captcha;
 
-use think\facade\Session;
+use think\Session;
 
 class Captcha
 {
