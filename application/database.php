@@ -13,13 +13,13 @@ return [
     // 数据库类型
     'type'           => 'mysql',
     // 服务器地址
-    'hostname'       => '139.196.178.64',
+    'hostname'       => 'ip',
     // 数据库名
     'database'       => 'dspx',
     // 用户名
-    'username'       => 'root',
+    'username'       => '',
     // 密码
-    'password'       => 'Zha54321',
+    'password'       => '',
     // 数据库编码默认采用utf8
     'charset'        => 'utf8',
     // 数据库表前缀
